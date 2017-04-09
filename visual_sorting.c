@@ -22,17 +22,45 @@ date: April 9th 2017
 #define QUICK "quick"
 #define HEAP "heap"
 
+//dimensions of the display
+#define WIDTH 140
+#define HEIGHT 30
 
+#define BORDER_CHAR '#'
 
+/**
+function: border
+description: this function prints the border of the display
+*/
+static void border(){
+	for(int i = 0; i < WIDTH; i++){
+		//top row
+		setCursor(0,i);
+		put(BORDER_CHAR);
 
+		//bottom row
+		setCursor(HEIGHT-1,i);
+		put(BORDER_CHAR);
+	}
+	for(int j = 0; j < HEIGHT; j++){
+		//left column
+		setCursor(j,0);
+		put(BORDER_CHAR);
+		
+		//right column
+		setCursor(j,WIDTH-1);
+		put(BORDER_CHAR);
+	}
+	setCursor(HEIGHT,0);//set cursor below border
+}
 
 /**
 function: usage
 description: prints the correct way to run this program
 */
 static void usage(){
-	printf("Usage: ./visual_sorting <which-sort>\n"\
-		"<which-sort>:\t"\
+	printf("Usage: ./visual_sorting [which-sort]\n"\
+		"[which-sort]:\t"\
 		INSERTION", "SELECTION", "BUBBLE", "MERGE\
 		", "QUICK", "HEAP"\n");
 }
@@ -46,8 +74,10 @@ description: the main function, main entry way on start
 */
 int main(int argc, char **argv){
 	if(argc==2){
+		clear();
+		border();
 		if(strcmp(INSERTION,argv[1])==0){
-			printf("worked\n");
+			
 		}
 	}else{
 		usage();
