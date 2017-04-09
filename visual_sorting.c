@@ -27,6 +27,38 @@ date: April 9th 2017
 #define HEIGHT 30
 
 #define BORDER_CHAR '#'
+#define CLEAR_CHAR ' '
+#define NUMBER_CHAR '@'
+
+//the array of numbers to be sorted in the display
+static unsigned char list[WIDTH-2];
+
+static void printList(){
+	//cycle through the list
+	for(int i = 0; i < WIDTH-2;i++){
+		int amountToPrint = list[i];
+		int column = 1 + i;
+		//print each number in the list visually
+		for(int j = 0; j < amountToPrint; j++){
+			setCursor(HEIGHT-2-j,column);
+			put(NUMBER_CHAR);
+		}
+	}
+}
+
+/**
+function: populate
+description: this function populates the programs list with random
+	numbers to be sorted in the display
+*/
+static void populateList(){
+	
+	for(int i = 0; i < WIDTH-2;i++){
+		//max the num can be is within the height of the display
+		unsigned char num = rand()%(HEIGHT-1);
+		list[i]=num;
+	}
+}
 
 /**
 function: border
@@ -51,7 +83,6 @@ static void border(){
 		setCursor(j,WIDTH-1);
 		put(BORDER_CHAR);
 	}
-	setCursor(HEIGHT,0);//set cursor below border
 }
 
 /**
@@ -76,6 +107,9 @@ int main(int argc, char **argv){
 	if(argc==2){
 		clear();
 		border();
+		populateList();
+		printList();
+		setCursor(HEIGHT,0);//reset cursor below border
 		if(strcmp(INSERTION,argv[1])==0){
 			
 		}
