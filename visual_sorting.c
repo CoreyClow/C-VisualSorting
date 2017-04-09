@@ -80,10 +80,32 @@ static void insertion(){
 		}
 		//insert element in correct place
 		list[insert+1]=element;
+
+		//print the list after change
 		printList();	
 	}
 }
 
+static void selection(){
+	//cycle through all elements
+	for( int i = 0; i < SIZE;i++){
+		int smallest = list[i];
+		int smallestIndex = i;
+		//find the smallest
+		for(int j = i+1; j < SIZE;j++){
+			if(list[j]<smallest){
+				smallest=list[j];
+				smallestIndex=j;
+			}
+		}
+		//swap current and smallest
+		list[smallestIndex]=list[i];
+		list[i]=smallest;
+		
+		//print the list after change
+		printList();
+	}
+}
 
 /**
 function: populate
@@ -124,6 +146,8 @@ int main(int argc, char **argv){
 		printList();
 		if(strcmp(INSERTION,argv[1])==0){
 			insertion();	
+		}else if(strcmp(SELECTION,argv[1])==0){
+			selection();
 		}
 		setCursor(HEIGHT,0);//set cursor below border
 	}else{
