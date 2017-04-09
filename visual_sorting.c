@@ -26,16 +26,31 @@ date: April 9th 2017
 #define WIDTH 140
 #define HEIGHT 30
 
-#define BORDER_CHAR '#'
+#define SIZE (WIDTH)
+#define MAX (HEIGHT)
+
 #define CLEAR_CHAR ' '
 #define NUMBER_CHAR '@'
 
 //the array of numbers to be sorted in the display
-static unsigned char list[WIDTH-2];
+static unsigned char list[SIZE];
 
+/**
+function: printList
+description: this function prints the list visually within the display
+*/
 static void printList(){
+	/*
+	printf("\n[");
+	for(int i = 0; i < SIZE; i++){
+		printf("%d, ",list[i]);
+	}
+	printf("]\n");
+	*/
+	
+	clear();
 	//cycle through the list
-	for(int i = 0; i < WIDTH-2;i++){
+	for(int i = 0; i < SIZE;i++){
 		int amountToPrint = list[i];
 		int column = 1 + i;
 		//print each number in the list visually
@@ -44,7 +59,31 @@ static void printList(){
 			put(NUMBER_CHAR);
 		}
 	}
+	
 }
+
+/**
+function: insertion
+description: this function is used to sort the programs list using insertion-sort
+	meaning it cycles through the list, grabs the first unsorted element,
+	and inserts it into the correct place in the sorted part of the list
+*/
+static void insertion(){
+	//cycle through all elements
+	for(int i = 1; i < SIZE; i++){
+		int element = list[i];
+		int insert = i-1;
+		while(insert>=0 && list[insert] > element){
+			//shift elements over
+			list[insert+1]=list[insert];
+			insert--;
+		}
+		//insert element in correct place
+		list[insert+1]=element;
+		printList();	
+	}
+}
+
 
 /**
 function: populate
@@ -53,35 +92,10 @@ description: this function populates the programs list with random
 */
 static void populateList(){
 	
-	for(int i = 0; i < WIDTH-2;i++){
+	for(int i = 0; i < SIZE;i++){
 		//max the num can be is within the height of the display
-		unsigned char num = rand()%(HEIGHT-1);
+		unsigned char num = rand()%(MAX+1);
 		list[i]=num;
-	}
-}
-
-/**
-function: border
-description: this function prints the border of the display
-*/
-static void border(){
-	for(int i = 0; i < WIDTH; i++){
-		//top row
-		setCursor(0,i);
-		put(BORDER_CHAR);
-
-		//bottom row
-		setCursor(HEIGHT-1,i);
-		put(BORDER_CHAR);
-	}
-	for(int j = 0; j < HEIGHT; j++){
-		//left column
-		setCursor(j,0);
-		put(BORDER_CHAR);
-		
-		//right column
-		setCursor(j,WIDTH-1);
-		put(BORDER_CHAR);
 	}
 }
 
@@ -106,13 +120,12 @@ description: the main function, main entry way on start
 int main(int argc, char **argv){
 	if(argc==2){
 		clear();
-		border();
 		populateList();
 		printList();
-		setCursor(HEIGHT,0);//reset cursor below border
 		if(strcmp(INSERTION,argv[1])==0){
-			
+			insertion();	
 		}
+		setCursor(HEIGHT,0);//set cursor below border
 	}else{
 		usage();
 	}
