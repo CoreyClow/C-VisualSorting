@@ -71,7 +71,7 @@ description: this function is used to sort the programs list using insertion-sor
 static void insertion(){
 	//cycle through all elements
 	for(int i = 1; i < SIZE; i++){
-		int element = list[i];
+		unsigned char element = list[i];
 		int insert = i-1;
 		while(insert>=0 && list[insert] > element){
 			//shift elements over
@@ -86,10 +86,17 @@ static void insertion(){
 	}
 }
 
+/**
+function: selection
+description: this function utilizes the selection sort algorithm to sort
+	the programs list. in other words it scans the entire unsorted
+	section of the list, looks for the smallest, then puts it at the
+	end of the the sorted part of the list.
+*/
 static void selection(){
 	//cycle through all elements
 	for( int i = 0; i < SIZE;i++){
-		int smallest = list[i];
+		unsigned char smallest = list[i];
 		int smallestIndex = i;
 		//find the smallest
 		for(int j = i+1; j < SIZE;j++){
@@ -103,6 +110,35 @@ static void selection(){
 		list[i]=smallest;
 		
 		//print the list after change
+		printList();
+	}
+}
+
+/**
+function: bubble
+description: this function utilizes the bubble sort algorithm
+	to sort the programs list of elements. this means it cycles through
+	the list, swapping bigger elements with adjacent smaller elements
+	until the list is sorted.
+*/
+static void bubble(){
+	int n = SIZE;
+	//while sorted section of array hasnt reached beginning yet
+	while(n>0){
+		//the index of where sorted section begins
+		int m = 0;
+		for(int i = 1; i < n; i++){
+			if(list[i-1] > list[i]){
+				//swap the two elements
+				unsigned char current = list[i-1];
+				list[i-1]=list[i];
+				list[i]=current;
+				m=i;
+			}
+		}
+		n=m;//grow sorted section
+
+		//print list after one sorted element finalized
 		printList();
 	}
 }
@@ -148,6 +184,8 @@ int main(int argc, char **argv){
 			insertion();	
 		}else if(strcmp(SELECTION,argv[1])==0){
 			selection();
+		}else if(strcmp(BUBBLE,argv[1])==0){
+			bubble();
 		}
 		setCursor(HEIGHT,0);//set cursor below border
 	}else{
