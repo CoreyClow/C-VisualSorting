@@ -214,6 +214,28 @@ static void usage(){
 }
 
 /**
+function: setup
+description: this funcion sets up necessary things before beginning
+	the sort such as populating the list, clearing the screen, etc.
+*/
+static void setup(){
+	clear();
+	populateList();
+	printList();
+}
+
+
+/**
+function: cleanup
+description: this function does the necessary cleanup before exiting the
+	program such as freeing any dynamic memory if there is any,
+	setting the cursor to below the border etc.
+*/
+static void cleanup(){
+	setCursor(HEIGHT,0);//cursor below display
+}
+
+/**
 function: main
 description: the main function, main entry way on start
 @param argc the number of arguments
@@ -222,17 +244,21 @@ description: the main function, main entry way on start
 */
 int main(int argc, char **argv){
 	if(argc==2){
-		clear();
-		populateList();
-		printList();
 		if(strcmp(INSERTION,argv[1])==0){
-			insertion();	
+			setup();
+			insertion();
+			cleanup();
 		}else if(strcmp(SELECTION,argv[1])==0){
+			setup();
 			selection();
+			cleanup();
 		}else if(strcmp(BUBBLE,argv[1])==0){
+			setup();
 			bubble();
+			cleanup();
+		}else{//argument doesnt match any sorts
+			usage();
 		}
-		setCursor(HEIGHT,0);//set cursor below border
 	}else{
 		usage();
 	}
