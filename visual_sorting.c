@@ -13,6 +13,7 @@ date: April 9th 2017
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>//ceil
 #include "display.h"//overlay printing
 #include "delay.h" //delay program execution
 
@@ -36,7 +37,8 @@ date: April 9th 2017
 #define NUMBER_CHAR '@'
 
 //the array of numbers to be sorted in the display
-static unsigned char list[SIZE];
+//must be malloced before being used
+static unsigned char *list;
 
 /**
 function: printList
@@ -88,6 +90,7 @@ static void printChange(int index, unsigned char new){
 		setCursor(HEIGHT-1-i,index);
 		put(NUMBER_CHAR);
 	}
+	delay(DELAY_MICROSEC);
 }
 
 /**
@@ -109,9 +112,6 @@ static void insertion(){
 			//shift elements over
 			list[insert+1]=list[insert];
 			insert--;
-		
-			//delay program execution so user can actually see changes
-			delay(DELAY_MICROSEC);
 		}
 		//print the insertion before making the change
 		printChange(insert+1,element);
@@ -139,9 +139,7 @@ static void selection(){
 				smallest=list[j];
 				smallestIndex=j;
 			}
-
-			//delay execution so user can actually see changes
-			delay(DELAY_MICROSEC);
+			delay(DELAY_MICROSEC);//delay because of comparison
 		}
 
 		//only swap if it found a smaller element
@@ -189,6 +187,111 @@ static void bubble(){
 }
 
 /**
+function:parent
+description: finds the parent in a binary tree array of a given index
+@param index the child index
+@returns the parent index
+*/
+static int parent(int index){
+	return (int) floor(((float)(index-1))/2.0);
+}
+
+/**
+function: leftChild
+description: returns the left child index of a given index in a binary tree
+@param index the index to find left child of
+@returns the index of the left child
+*/
+static int leftChild(int index){
+	return (2*index)+1;
+}
+
+/**
+function: siftDown
+description: this function reorganizes a heap after
+	a number has been removed from a valid heap and replaced
+	with the rightmost member of the heap
+@param start the starting index in the program list of the heap
+@param end the ending index of the heap in the program list
+*/
+static void siftDown(int start,int end){
+	int currentIndex = start;
+	while(leftChild(currentIndex) <= end){
+		int leftIndex = leftChild(currentIndex);
+		int swapIndex = currentIndex;
+		//left child biggest
+		if(list[swapIndex]<list[leftIndex]){
+			swapIndex= leftIndex;
+		}
+		//right child biggest
+		if(leftIndex+1<=end && list[swapIndex] < list[leftIndex+1]){
+			swapIndex = leftIndex+1;
+		}
+		//parent biggest
+		if(swapIndex == currentIndex){
+			break;
+		}else{
+			unsigned char parent =list[currentIndex];
+			
+			//print the change before it happens
+			printChange(currentIndex,list[swapIndex]);
+			printChange(swapIndex,parent);
+
+			//swap
+			list[currentIndex] = list[swapIndex];
+			list[swapIndex] = parent;
+	
+			//move down the heap
+			currentIndex = swapIndex;
+		}
+	}
+}
+
+/**
+function: heapify
+description: this function reorganizes a heap after an
+        element has been added to a valid heap beforehand
+@param size the size of the heap in the program list
+*/
+static void heapify(int size){
+        int currentIndex = parent(size-1);//parent of last node
+        while(currentIndex >=0){//stop when reach head of heap
+                //sift the currentIndex element to proper place
+                siftDown(currentIndex,size-1);
+                currentIndex--;
+        }
+}	
+
+/**
+function: heap
+description: this function utilizes the heap sort algorithm
+	to sort the programs list of elements. in other words it removes
+	one element from the list at a time and constructs a heap,afterwards
+	removing from the heap and placing in the sorted section
+*/
+static void heap(){
+	//build the heap
+	heapify(SIZE);
+	int endIndex = SIZE-1;
+	while(endIndex >0){//stop once you reach the head
+		unsigned char head = list[0];
+		
+		//print the change before it happens
+		printChange(0,list[endIndex]);
+		printChange(endIndex,head);
+
+		//swap
+		list[0]=list[endIndex];
+		list[endIndex]=head;
+
+		endIndex--;
+		
+		//restore the heap
+		siftDown(0,endIndex);
+	}
+}
+
+/**
 function: populate
 description: this function populates the programs list with random
 	numbers to be sorted in the display
@@ -220,6 +323,8 @@ description: this funcion sets up necessary things before beginning
 */
 static void setup(){
 	clear();
+	//setup the memory in heap
+	list = malloc(sizeof(unsigned char)*SIZE);
 	populateList();
 	printList();
 }
@@ -232,6 +337,7 @@ description: this function does the necessary cleanup before exiting the
 	setting the cursor to below the border etc.
 */
 static void cleanup(){
+	free(list);
 	setCursor(HEIGHT,0);//cursor below display
 }
 
@@ -255,6 +361,10 @@ int main(int argc, char **argv){
 		}else if(strcmp(BUBBLE,argv[1])==0){
 			setup();
 			bubble();
+			cleanup();
+		}else if(strcmp(HEAP,argv[1])==0){
+			setup();
+			heap();
 			cleanup();
 		}else{//argument doesnt match any sorts
 			usage();
